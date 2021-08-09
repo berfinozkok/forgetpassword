@@ -1,5 +1,4 @@
-% extends 'layout.html' %
-% block contentA %
+{% block contentA %}
 <div class="container w-50">
     <form method="POST" action="">
         {{form.hidden_tag()}}
@@ -7,21 +6,22 @@
             <legend class="border-bottom mb-4">{{legend}}</legend>
                         <div class="form-group">
                 {{form.email.label(class="form-control-label")}}
-                % if form.email.errors %
+                {% if form.email.errors %}
                     {{form.email(class="form-control form-control-lg is-valid")}}
                     {%for error in form.email.errors %}   
                         <span>{{error}}</span>
-                    % endfor %
-                    % else %
+                    {% endfor %}
+                    {% else %}
                     {{form.email(class="form-control form-control-lg")}}
-                % endif %
+                {% endif %}
             </div>
 
         </fieldset>
         <div class="form-group mt-2">
-            {{form.submit(class="btn btn-primary)}}
+            {{form.email }}
+            {{form.submit }}
             <a href="{{url_for('reset_request')}}">Forgot Password?</a>
         </div>
     </form>
 </div>
-% endblock contentA %
+{% endblock contentA %}

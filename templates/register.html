@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Configuration</title>
+    <title>Signup </title>
 </head>
 <body>
-    <h1>Login Page</h1>
+    <h1>Register Page</h1>
     <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.username }}
         {{ form.email }}
+        {{ form.password }}
+        {{ form.confirm_password }}
         {{ form.submit }}
-        <a href="{{url_for('login')}}">Login</a><br>
     </form>
+    
+    <a href="{{url_for('login')}}">Already have an account? Sign in</a>
 </body>
 </html>

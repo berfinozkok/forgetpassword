@@ -13,7 +13,8 @@
         {{ form.username }}
         {{ form.password }}
         {{ form.submit }}
-        <a href="{{url_for('forgotpassword')}}">Forgot Password?</a><br>
+        <a href="{{url_for('reset_request')}}">Reset Password?</a><br>
+        <a href="{{url_for('two_factor_setup')}}">QRCode</a><br>
     </form>
 </body>
 </html>
