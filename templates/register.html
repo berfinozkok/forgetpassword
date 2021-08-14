@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Signup </title>
 </head>
 <body>
-    <h1>Login Page</h1>
+    <h1>Register Page</h1>
     <form method="POST" action="">
         {{ form.hidden_tag() }} <br>
-        <b>E-mail</b> 
+        <b>Username</b> 
+        {{ form.username }} <br>
+        <b>E-mail</b>
         {{ form.email }} <br>
-        <b>Password</b> 
+        <b>Password</b>
         {{ form.password }} <br>
-        <b>Token</b> 
-        {{ form.token }} <br>
+        <b>Confirm Password</b>
+        {{ form.confirm_password }} <br>
         {{ form.submit }} <br>
-        <a href="{{url_for('reset_request')}}">Reset Password?</a><br>
-        <a href="{{url_for('two_factor_setup')}}">QRCode</a><br>
     </form>
+    
+    <a href="{{url_for('login')}}">Already have an account? Sign in</a>
 </body>
 </html>
