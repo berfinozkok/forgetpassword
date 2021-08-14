@@ -3,7 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, cur
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, TextField
-from wtforms.validators import EqualTo, InputRequired, Length, ValidationError,  DataRequired, Email, email_validator, Required
+from wtforms.validators import EqualTo, InputRequired, Length, ValidationError,  DataRequired, Email, email_validator
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
 from io import BytesIO
@@ -86,7 +86,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     email=StringField(label='Email', validators=[DataRequired(),Length(min=4, max=20)])
     password=PasswordField(validators=[DataRequired(),Length(min=4, max=20)])
-    token = StringField('Token', validators=[Required(), Length(6, 6)])
+    token = StringField('Token', validators=[DataRequired(), Length(6, 6)])
     submit=SubmitField(label='Login', validators=[DataRequired()])
 
 class ResetRequestForm(FlaskForm):
@@ -152,6 +152,9 @@ def qrcode():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    form = LoginForm()
     form=LoginForm()
     if form.validate_on_submit():
         user= User.query.filter_by(email=form.email.data).first()
@@ -167,7 +170,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/dashboard', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def dashboard():
     return render_template('dashboard.html')
 

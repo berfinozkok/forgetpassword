@@ -9,10 +9,14 @@
 <body>
     <h1>Login Page</h1>
     <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        {{ form.username }}
-        {{ form.password }}
-        {{ form.submit }}
+        {{ form.hidden_tag() }} <br>
+        <b>E-mail</b> 
+        {{ form.email }} <br>
+        <b>Password</b> 
+        {{ form.password }} <br>
+        <b>Token</b> 
+        {{ form.token }} <br>
+        {{ form.submit }} <br>
         <a href="{{url_for('reset_request')}}">Reset Password?</a><br>
         <a href="{{url_for('two_factor_setup')}}">QRCode</a><br>
     </form>

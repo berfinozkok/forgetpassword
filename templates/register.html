@@ -9,12 +9,16 @@
 <body>
     <h1>Register Page</h1>
     <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        {{ form.username }}
-        {{ form.email }}
-        {{ form.password }}
-        {{ form.confirm_password }}
-        {{ form.submit }}
+        {{ form.hidden_tag() }} <br>
+        <b>Username</b> 
+        {{ form.username }} <br>
+        <b>E-mail</b>
+        {{ form.email }} <br>
+        <b>Password</b>
+        {{ form.password }} <br>
+        <b>Confirm Password</b>
+        {{ form.confirm_password }} <br>
+        {{ form.submit }} <br>
     </form>
     
     <a href="{{url_for('login')}}">Already have an account? Sign in</a>
