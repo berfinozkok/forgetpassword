@@ -18,7 +18,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db=SQLAlchemy(app)
 bcrypt=Bcrypt(app)
-login_manager=LoginManager(app)
+login_manager=LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -37,18 +39,19 @@ def unauthorized():
     return redirect(url_for('register'))
 
 class User(db.Model, UserMixin):
-    id=db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'users'
+    id=db.Column(db.Integer, primary_key=True, auto_increment=True)
     username=db.Column(db.String(20), unique=True, nullable=False)
     email=db.Column(db.String(120), unique=True, nullable=False)
-    image_file=db.Column(db.String(20), nullable=False, default='default.jpg')
+    #image_file=db.Column(db.String(20), nullable=False, default='default.jpg')
     password= db.Column(db.String(60), nullable=False)
-    otp_secret = db.Column(db.String(16))
+    #otp_secret = db.Column(db.String(16))
 
-    def __init__(self, **kwargs):
-        super(User, self).__init__(**kwargs)
-        if self.otp_secret is None:
-            # generate a random secret
-            self.otp_secret = base64.b32encode(os.urandom(10)).decode('utf-8')
+    #def __init__(self, **kwargs):
+     #   super(User, self).__init__(**kwargs)
+      #  if self.otp_secret is None:
+       #     # generate a random secret
+        #    self.otp_secret = base64.b32encode(os.urandom(10)).decode('utf-8')
 
     @property
     def password(self):
@@ -61,12 +64,12 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def get_totp_uri(self):
-        return 'otpauth://totp/2FA-Demo:{0}?secret={1}&issuer=2FA-Demo' \
-            .format(self.username, self.otp_secret)
+    #def get_totp_uri(self):
+     #   return 'otpauth://totp/2FA-Demo:{0}?secret={1}&issuer=2FA-Demo' \
+      #      .format(self.username, self.otp_secret)
 
-    def verify_totp(self, token):
-        return onetimepass.valid_totp(token, self.otp_secret)
+    #def verify_totp(self, token):
+     #   return onetimepass.valid_totp(token, self.otp_secret)
 
     
 class RegistrationForm(FlaskForm):
@@ -86,7 +89,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     email=StringField(label='Email', validators=[DataRequired(),Length(min=4, max=20)])
     password=PasswordField(validators=[DataRequired(),Length(min=4, max=20)])
-    token = StringField('Token', validators=[DataRequired(), Length(6, 6)])
+    #token = StringField('Token', validators=[DataRequired(), Length(6, 6)])
     submit=SubmitField(label='Login', validators=[DataRequired()])
 
 class ResetRequestForm(FlaskForm):
@@ -114,16 +117,16 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/twofactor')
+@app.route('/two_factor_setup')
 def two_factor_setup():
     if 'username' not in session:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('home'))
     user = User.query.filter_by(username=session['username']).first()
     if user is None:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('register'))
     # since this page contains the sensitive qrcode, make sure the browser
     # does not cache it
-    return render_template('two-factor-setup.html'), 200, {
+    return render_template('two_factor_setup'), 200, {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0'}
@@ -152,10 +155,9 @@ def qrcode():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    form = LoginForm()
-    form=LoginForm()
     if form.validate_on_submit():
         user= User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password,form.password.data):
@@ -167,10 +169,10 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/dashboard', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def dashboard():
     return render_template('dashboard.html')
 
@@ -201,10 +203,10 @@ def reset_request():
 @app.route('/reset_request/<token>', methods=['POST', 'GET'])
 def reset_token(token):
     user=User.verify_token(token)
+    form=ResetPasswordForm()
     if user is None:
         flash('That is invalid token or expired. Please try again.', 'warning')
         return redirect(url_for('reset_request'))
-    form=ResetPasswordForm()
     if form.validate_on_submit():
         hashed_password=bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user.password=hashed_password
